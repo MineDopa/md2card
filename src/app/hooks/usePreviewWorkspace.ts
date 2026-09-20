@@ -5,6 +5,10 @@ export type PreviewColumns = 1 | 2 | 3;
 
 const COMPACT_WORKSPACE_QUERY = "(max-width: 920px)";
 const MIN_READABLE_PREVIEW_SCALE = 0.25;
+// Fitting a 1080px card to a phone viewport lands near 0.30, which renders body
+// copy around 9px. On phones we keep a legible floor and let the preview scroll
+// sideways instead; manual zoom takes over from there.
+const MIN_PHONE_PREVIEW_SCALE = 0.42;
 
 function asPreviewColumns(value: number): PreviewColumns {
   if (value >= 3) return 3;
@@ -29,6 +33,10 @@ export function usePreviewWorkspace({
     window.matchMedia(COMPACT_WORKSPACE_QUERY).matches,
   );
   const [sidebarWidth, setSidebarWidth] = useState(520);
+  // null = follow the automatic fit; a number means the reader pinned a zoom.
+  const [previewZoomOverride, setPreviewZoomOverride] = useState<number | null>(
+    null,
+  );
   const sidebarResizeCleanup = useRef<(() => void) | null>(null);
 
   const fitPreviewColumns = useCallback(
@@ -56,10 +64,17 @@ export function usePreviewWorkspace({
         (1080 * effectiveColumns);
       setPreviewColumnLimit(limit);
       setEffectivePreviewColumns(effectiveColumns);
-      setPreviewScale(Math.min(0.72, Math.max(0.12, scale)));
+      const fitted = Math.min(0.72, Math.max(0.12, scale));
+      setPreviewScale(
+        compactWorkspace ? Math.max(MIN_PHONE_PREVIEW_SCALE, fitted) : fitted,
+      );
     },
     [compactWorkspace, pageCount, previewColumns],
   );
+
+  const setPreviewZoom = (value: number | null) => {
+    setPreviewZoomOverride(value === null ? null : Math.min(1, Math.max(0.12, value)));
+  };
 
   const selectPreviewColumns = (columns: PreviewColumns) => {
     if (columns > previewColumnLimit) return;
@@ -127,15 +142,19 @@ export function usePreviewWorkspace({
   };
 
   const pageHeight = ratio === "3:4" ? 1440 : 1620;
-  const previewStyle = `--preview-columns: ${effectivePreviewColumns}; --preview-scale: ${previewScale}; --preview-card-width: ${Math.round(1080 * previewScale)}px; --preview-card-height: ${Math.round(pageHeight * previewScale)}px;`;
+  const appliedPreviewScale = previewZoomOverride ?? previewScale;
+  const previewStyle = `--preview-columns: ${effectivePreviewColumns}; --preview-scale: ${appliedPreviewScale}; --preview-card-width: ${Math.round(1080 * appliedPreviewScale)}px; --preview-card-height: ${Math.round(pageHeight * appliedPreviewScale)}px;`;
 
   return {
+    appliedPreviewScale,
     compactWorkspace,
     effectivePreviewColumns,
     fitPreviewColumns,
     previewColumnLimit,
     previewStyle,
+    previewZoomOverride,
     selectPreviewColumns,
+    setPreviewZoom,
     sidebarWidth,
     startSidebarResize,
   };

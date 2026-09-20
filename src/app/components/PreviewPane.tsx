@@ -14,10 +14,13 @@ export function PreviewPane({
   effectiveColumns,
   columnLimit,
   compactWorkspace,
+  appliedPreviewScale,
+  zoomPinned,
   diagnosticLabel,
   hasExportErrors,
   onSelectColumns,
   onOpenSettings,
+  onZoomChange,
   onCardRef,
 }: {
   activeOnMobile: boolean;
@@ -29,10 +32,13 @@ export function PreviewPane({
   effectiveColumns: PreviewColumns;
   columnLimit: PreviewColumns;
   compactWorkspace: boolean;
+  appliedPreviewScale: number;
+  zoomPinned: boolean;
   diagnosticLabel?: string;
   hasExportErrors: boolean;
   onSelectColumns: (columns: PreviewColumns) => void;
   onOpenSettings: () => void;
+  onZoomChange: (scale: number | null) => void;
   onCardRef: (pageId: string, node: HTMLElement | null) => void;
 }) {
   return (
@@ -67,6 +73,30 @@ export function PreviewPane({
                   {columns} 列
                 </button>
               ))}
+          </div>
+          <div class="preview-zoom-control">
+            <label for="preview-zoom">缩放</label>
+            <output for="preview-zoom">
+              {Math.round(appliedPreviewScale * 100)}%
+            </output>
+            <input
+              id="preview-zoom"
+              type="range"
+              min={12}
+              max={100}
+              step={2}
+              value={Math.round(appliedPreviewScale * 100)}
+              onInput={(event) =>
+                onZoomChange(
+                  Number((event.target as HTMLInputElement).value) / 100,
+                )
+              }
+            />
+            {zoomPinned && (
+              <button type="button" onClick={() => onZoomChange(null)}>
+                自动适应
+              </button>
+            )}
           </div>
           <span class="page-badge">{pagePlan.pages.length} 张卡片</span>
           {diagnosticLabel && (

@@ -37,6 +37,37 @@ describe('技术 Markdown 解析', () => {
     expect(article.blocks.some((block) => block.kind === 'pageBreak')).toBe(true);
   });
 
+  it('单独一行的 <br> 变成一个空行块，连续书写可累加', () => {
+    const single = parseMarkdown('第一段。\n\n<br>\n\n第二段。');
+    expect(single.blocks.some((block) => block.kind === 'spacer')).toBe(true);
+    expect(single.blocks.find((block) => block.kind === 'spacer')).toMatchObject({ lines: 1 });
+
+    const triple = parseMarkdown('<br>\n<br>\n<br>');
+    expect(triple.blocks[0]).toMatchObject({ kind: 'spacer', lines: 3 });
+  });
+
+  it('行内的 <br> 解析为换行而不是裸露标签', () => {
+    const article = parseMarkdown('第一行<br>第二行');
+    expect(article.blocks[0]).toMatchObject({
+      kind: 'paragraph',
+      children: [
+        { kind: 'text', value: '第一行' },
+        { kind: 'break' },
+        { kind: 'text', value: '第二行' },
+      ],
+    });
+  });
+
+  it('卡片末尾的 --- 不会孤零零留在页尾', () => {
+    const body = Array.from({ length: 40 }, (_, index) => `第 ${index + 1} 段占位文本，用于把内容推到第二张卡片。`).join('\n\n');
+    const article = parseMarkdown(`# 长文\n\n${body}\n\n---\n`);
+    const plan = createPagePlan(article, DEFAULT_CONFIG, {});
+    expect(plan.pages.length).toBeGreaterThan(1);
+    for (const page of plan.pages) {
+      expect(page.fragments[page.fragments.length - 1]?.block.kind).not.toBe('thematicBreak');
+    }
+  });
+
   it('解析紧接后文的粗体，避免中文笔记中显示裸露的 ** 标记', () => {
     const article = parseMarkdown('**答：是。**它们进入同一个 Transformer。');
     expect(article.blocks[0]).toMatchObject({

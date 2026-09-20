@@ -166,6 +166,10 @@ export function BlockView({ block, config, resources = EMPTY_IMAGE_RESOURCES, ne
         return <hr />;
       case 'pageBreak':
         return null;
+      case 'spacer': {
+        const style = { '--spacer-lines': String(block.lines) } as unknown as Record<string, string>;
+        return <div class="spacer" style={style} aria-hidden="true" />;
+      }
     }
   })();
   return <div class={`content-block block-${block.kind}${nested ? ' is-nested' : ''}`}>{content}</div>;

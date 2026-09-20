@@ -45,6 +45,8 @@ function fallbackHeight(block: Block, config: LayoutConfig): number {
       return 42;
     case 'pageBreak':
       return 0;
+    case 'spacer':
+      return block.lines * config.bodyFontSize * config.bodyLineHeight;
   }
 }
 
@@ -319,6 +321,14 @@ export function createPagePlan(
     }
   }
   flush();
+  // A trailing `---` is almost always a source habit, not a design choice: at
+  // the end of a card it renders as a lonely rule floating above the footer.
+  // Drop it unless it is the only thing left on the page.
+  for (const page of pages) {
+    while (page.fragments.length > 1 && page.fragments[page.fragments.length - 1].block.kind === 'thematicBreak') {
+      page.fragments.pop();
+    }
+  }
 
   if (!pages.length && article.blocks.length === 0) {
     pages.push({ id: 'page-1', index: 0, section: '', fragments: [], estimatedHeight: 0 });

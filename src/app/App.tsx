@@ -102,12 +102,15 @@ export function App() {
     sourceFileName,
   });
   const {
+    appliedPreviewScale,
     compactWorkspace,
     effectivePreviewColumns,
     fitPreviewColumns,
     previewColumnLimit,
     previewStyle,
+    previewZoomOverride,
     selectPreviewColumns,
+    setPreviewZoom,
     sidebarWidth,
     startSidebarResize,
   } = usePreviewWorkspace({
@@ -415,9 +418,12 @@ export function App() {
           effectiveColumns={effectivePreviewColumns}
           columnLimit={previewColumnLimit}
           compactWorkspace={compactWorkspace}
+          appliedPreviewScale={appliedPreviewScale}
+          zoomPinned={previewZoomOverride !== null}
           diagnosticLabel={previewDiagnosticLabel}
           hasExportErrors={exportHasErrors}
           onSelectColumns={selectPreviewColumns}
+          onZoomChange={setPreviewZoom}
           onOpenSettings={() => {
             setActivePane("settings");
             setMobilePane("settings");
