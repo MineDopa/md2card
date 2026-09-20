@@ -8,6 +8,7 @@ import './styles/cards/themes/minimal.css';
 import './styles/cards/themes/editorial.css';
 import './styles/cards/themes/notebook.css';
 import './styles/cards/themes/research.css';
+import './styles/cards/themes/eorzea.css';
 import './styles/cards/code-appearance.css';
 import './styles/cards/theme-picker.css';
 import './styles/workbench.css';

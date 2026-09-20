@@ -34,8 +34,8 @@ export interface ArticleDocument {
 
 export type Density = 'relaxed' | 'balanced' | 'compact' | 'custom';
 export type CanvasRatio = '3:4' | '2:3';
-export type CardTheme = 'minimal' | 'editorial' | 'notebook' | 'research';
-export type CodeBlockAppearance = 'theme' | 'macos';
+export type CardTheme = 'minimal' | 'editorial' | 'notebook' | 'research' | 'eorzea';
+export type CodeBlockAppearance = 'theme' | 'macos' | 'gamebox';
 export type CoverMode = 'none' | 'integrated' | 'standalone';
 
 export interface PageCover {

@@ -1,0 +1,178 @@
+/* 星海回响: 纯净排版的阅读骨架，叠上 FF14 的界面语法。
+ *
+ * 取色直接来自 AO3 workskin 里的 .gamebox / .crystal / .NoteSheet：
+ * 深灰面板 #2a2a2a、金色 #ffd700、羊皮纸淡金 #f0d5a2、水晶蓝 #5aa7e0。
+ * 卡片正文仍然保持浅色底，只有「框」走深色信息框——封面、引用与代码块，
+ * 其余节奏沿用纯净排版，保证小红书上的长文可读性。
+ *
+ * 全部为静态样式：不使用 :hover、transition 与 animation，
+ * 因为卡片最终导出为静态位图，交互态无法保留。 */
+.theme-eorzea {
+  --ff-panel: #2a2a2e;
+  --ff-panel-raised: #33333a;
+  --ff-panel-line: #4a4a52;
+  --ff-gold: #c9a227;
+  --ff-gold-bright: #ffd700;
+  --ff-gold-ink: #8a6a1c;
+  --ff-parchment: #f0d5a2;
+  --ff-crystal: #5aa7e0;
+
+  --theme-surface: #fbfaf6;
+  --theme-surface-container-low: #f7f4ec;
+  --theme-surface-container: #eeece3;
+  --theme-surface-container-high: #e4e1d6;
+  --theme-on-surface: #23262c;
+  --theme-on-surface-variant: #5c616b;
+  --theme-primary: #2a6f9e;
+  --theme-primary-container: #dbe9f2;
+  --theme-on-primary-container: #10344d;
+  --theme-outline: #7f8794;
+  --theme-outline-variant: #dcd8ca;
+  --theme-code-surface: #2a2a2e;
+  --theme-code-toolbar: #33333a;
+  --theme-table-surface: #f8f6f0;
+  --theme-table-header: #2f3a46;
+  --theme-table-row-odd: #fbfaf6;
+  --theme-table-row-even: #f4f2ea;
+  --theme-table-shadow: 4px 7px 16px rgba(20, 26, 34, .06);
+  --theme-math-surface: #f7f4ec;
+  /* 代码面是深灰面板，因此语法色按深底配色。 */
+  --theme-syntax-comment: #8b9099;
+  --theme-syntax-keyword: #e8c46a;
+  --theme-syntax-string: #86c9a4;
+  --theme-syntax-function: #7fb6e6;
+  --theme-syntax-number: #eda15c;
+  --shape-technical: 5px;
+  --shape-container: 10px;
+  --shape-cover: 18px;
+  --heading-marker-width: 122px;
+  --heading-marker-height: 4px;
+  --heading-marker-radius: 2px;
+  --cover-decoration: #7fb6e6;
+}
+
+/* 卡面：羊皮纸冷白 + 极淡星尘点纹 + 右上角水晶光晕。 */
+.card-page.theme-eorzea {
+  background: #fbfaf6;
+  background-image: radial-gradient(circle at 100% 0%, rgba(42, 111, 158, .10), transparent 27%),
+    radial-gradient(rgba(118, 114, 102, .11) .8px, transparent .8px);
+  background-size: auto, 9px 9px;
+}
+
+/* 首卡封面：完整的 gamebox 深灰面板，金标题 + 水晶光点。 */
+.theme-eorzea .card-cover {
+  position: relative;
+  min-height: 206px;
+  padding: 30px 34px 32px;
+  border: 1px solid #f2f2f4;
+  border-radius: var(--shape-cover);
+  background: radial-gradient(ellipse at 24% 12%, rgba(255, 255, 255, .07), transparent 54%),
+    radial-gradient(ellipse at 78% 92%, rgba(0, 0, 0, .30), transparent 56%),
+    linear-gradient(135deg, #33333a 0%, #2a2a2e 46%, #22222a 100%);
+  box-shadow: 0 14px 30px rgba(16, 18, 24, .18), inset 0 1px 0 rgba(255, 255, 255, .10);
+}
+
+.theme-eorzea .card-cover-decoration {
+  right: 30px;
+  top: 30px;
+  width: 26px;
+  height: 26px;
+  border: 2px solid #b8965a;
+  border-radius: 50%;
+  background: radial-gradient(circle at 34% 28%, #cde9ff 0%, var(--ff-crystal) 34%, #25609e 64%, #123c6b 100%);
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, .55), 0 0 12px rgba(90, 167, 224, .45);
+  opacity: 1;
+}
+
+.theme-eorzea .card-cover-kicker { color: var(--ff-parchment); letter-spacing: .16em; }
+.theme-eorzea .card-cover-title { color: var(--ff-gold-bright); }
+.theme-eorzea .card-cover-subtitle { color: #c8c2b4; }
+.theme-eorzea .card-content.cover-only .card-cover { padding: 72px 58px; }
+
+/* 标题：H2 用金色渐隐短横线，H3 用水晶蓝竖标。 */
+.theme-eorzea .heading.depth-2::after {
+  background: linear-gradient(90deg, var(--ff-gold) 0 58%, rgba(201, 162, 39, .26) 58%);
+}
+.theme-eorzea .heading.depth-3 { color: var(--theme-primary); }
+.theme-eorzea .heading.depth-3::before { background: var(--theme-primary); }
+
+/* 分隔线：workskin 里 hr.time 的 ✧ ⌛ ✧ 母题，改用不会掉色的符号。 */
+.theme-eorzea hr {
+  position: relative;
+  width: 58%;
+  height: 26px;
+  margin: 20px auto;
+  background: transparent;
+  overflow: visible;
+}
+.theme-eorzea hr::before {
+  content: "—  ✧  ◆  ✧  —";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--ff-gold);
+  font-size: 19px;
+  letter-spacing: .22em;
+  white-space: nowrap;
+}
+
+/* 引用块：FF14 的对话 / 系统提示框。 */
+.theme-eorzea blockquote {
+  padding: 18px 22px;
+  border: 0;
+  border-left: 4px solid var(--ff-gold);
+  border-radius: 0 var(--shape-container) var(--shape-container) 0;
+  color: #ece9e2;
+  background: var(--ff-panel);
+  box-shadow: 0 9px 20px rgba(16, 18, 24, .16);
+}
+
+/* 行内代码保持浅色，避免正文里出现突兀的深色碎片。 */
+.theme-eorzea .inline-code {
+  border-color: #e2d6b2;
+  color: var(--ff-gold-ink);
+  background: #f6efda;
+}
+
+.theme-eorzea .content-block a { color: var(--theme-primary); text-decoration-color: rgba(42, 111, 158, .45); }
+.theme-eorzea .markdown-list li::marker { color: var(--theme-primary); }
+
+/* 表格：深色表头 + 羊皮纸斑马纹，对应 gamebox 的 .h2 深底金标题。 */
+.theme-eorzea .table-frame {
+  border-color: #ddd7c6;
+  background: var(--theme-table-surface);
+  box-shadow: var(--theme-table-shadow);
+}
+.theme-eorzea .table-frame th {
+  border-bottom: 1px solid #1d242c;
+  color: #f2efe8;
+  background: var(--theme-table-header);
+}
+.theme-eorzea .table-frame td { border-bottom-color: #e6e0d0; }
+
+.theme-eorzea .image-card { border-color: #ded4bd; background: #f8f5ee; }
+.theme-eorzea .image-card figcaption,
+.theme-eorzea .table-card figcaption { border-top-color: #e2dccb; color: var(--theme-on-surface-variant); }
+
+/* 跟随主题时的代码面：深灰 gamebox，无窗口按钮与白边。 */
+.theme-eorzea .code-card {
+  border: 1px solid var(--ff-panel-line);
+  border-radius: 12px;
+  background: var(--theme-code-surface);
+  box-shadow: 0 10px 22px rgba(16, 18, 24, .16);
+}
+.theme-eorzea .code-toolbar {
+  border-bottom-color: var(--ff-panel-line);
+  color: #c8c2b4;
+  background: var(--theme-code-toolbar);
+}
+.theme-eorzea .code-language { color: var(--ff-gold); }
+.theme-eorzea .code-meta { color: #9a958a; }
+.theme-eorzea .code-card pre { color: #e9e6df; }
+.theme-eorzea .code-line-list li::marker { color: #7b828b; }
+
+/* 续页标签与页码：羊皮纸小牌 + 金色页码。 */
+.theme-eorzea .continuation-label { color: #2a2a2e; background: #eadfb8; }
+.theme-eorzea .card-footer { border-color: #e0dac9; color: var(--theme-on-surface-variant); }
+.theme-eorzea .page-number { color: var(--ff-gold-ink); }

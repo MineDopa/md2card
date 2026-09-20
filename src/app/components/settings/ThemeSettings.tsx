@@ -25,6 +25,7 @@ export function ThemeSettings({
             { id: "research", name: "雾蓝实验室", hint: "蓝色 · 精确" },
             { id: "editorial", name: "柔光浅紫", hint: "浅紫 · 现代" },
             { id: "notebook", name: "雾松笔记", hint: "绿色 · 清透" },
+            { id: "eorzea", name: "星海回响", hint: "水晶 · 金辉" },
           ] as const
         ).map((theme) => (
           <button
@@ -51,6 +52,16 @@ export function ThemeSettings({
           macOS 浅色
           <br />
           <small>默认 · 窗口栏与白色代码区</small>
+        </button>
+        <button
+          type="button"
+          class={config.codeBlockAppearance === "gamebox" ? "selected" : ""}
+          aria-pressed={config.codeBlockAppearance === "gamebox"}
+          onClick={() => onConfigChange("codeBlockAppearance", "gamebox")}
+        >
+          FF14 信息框
+          <br />
+          <small>深灰面板 · 金边水晶</small>
         </button>
         <button
           type="button"

@@ -18,3 +18,17 @@
   background-image: linear-gradient(rgba(23, 102, 124, .2) 1px, transparent 1px), linear-gradient(90deg, rgba(23, 102, 124, .2) 1px, transparent 1px);
   background-size: 7px 7px;
 }
+
+/* 星海回响：上半深灰信息框 + 水晶点，下半羊皮纸 + 金色短横线。 */
+.card-theme-option.theme-eorzea .card-theme-swatch {
+  background-color: #fbfaf6;
+  background-image: radial-gradient(circle at 78% 17%, #5aa7e0 0 6px, transparent 7px),
+    linear-gradient(#c9a227, #c9a227),
+    linear-gradient(180deg, #2a2a2e 0 48%, transparent 48%);
+  background-repeat: no-repeat;
+  background-position: 0 0, 8px 66%, 0 0;
+  background-size: 100% 100%, 38px 4px, 100% 100%;
+}
+
+/* 代码外观从两档变三档，选择器需要三列。 */
+.code-block-appearance-control { grid-template-columns: repeat(3, minmax(0, 1fr)); }

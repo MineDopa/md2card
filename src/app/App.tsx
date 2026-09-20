@@ -38,7 +38,8 @@ function normalizeCardTheme(value: unknown): LayoutConfig["cardTheme"] {
     value === "minimal" ||
     value === "editorial" ||
     value === "notebook" ||
-    value === "research"
+    value === "research" ||
+    value === "eorzea"
   )
     return value;
   if (value === "paper" || value === "ink" || value === "mono")
@@ -51,7 +52,7 @@ function normalizeCardTheme(value: unknown): LayoutConfig["cardTheme"] {
 function normalizeCodeBlockAppearance(
   value: unknown,
 ): LayoutConfig["codeBlockAppearance"] {
-  return value === "macos" || value === "theme"
+  return value === "macos" || value === "theme" || value === "gamebox"
     ? value
     : DEFAULT_CONFIG.codeBlockAppearance;
 }

@@ -91,3 +91,92 @@
 .measure-stage.code-appearance-macos .token.operator,
 .measure-stage.code-appearance-macos .token.entity,
 .measure-stage.code-appearance-macos .token.url { color: #575e6c; }
+
+/* FF14 信息框：把 AO3 workskin 里的 .gamebox / .crystal 改装成代码块外观。
+ * 深灰面板 + 白色细边 + 金色语言标签 + 水晶圆点，可套用到任何卡片主题。
+ * CardPage 与 MeasureStage 同时带 code-appearance-*，窗口栏高度因此进入
+ * 真实测量与分页。全静态，不含悬停与动画态。 */
+.card-page.code-appearance-gamebox .code-card,
+.measure-stage.code-appearance-gamebox .code-card {
+  --theme-syntax-comment: #8b9099;
+  --theme-syntax-keyword: #e8c46a;
+  --theme-syntax-string: #86c9a4;
+  --theme-syntax-function: #7fb6e6;
+  --theme-syntax-number: #eda15c;
+  overflow: hidden;
+  border: 1px solid #f0f0f2;
+  border-radius: 14px;
+  background: #2a2a2a;
+  box-shadow: 0 12px 26px rgba(12, 14, 18, .22), inset 0 1px 0 rgba(255, 255, 255, .07);
+}
+
+.card-page.code-appearance-gamebox .code-toolbar,
+.measure-stage.code-appearance-gamebox .code-toolbar {
+  height: 46px;
+  grid-template-columns: minmax(104px, 1fr) auto minmax(104px, 1fr);
+  gap: 12px;
+  padding: 0 18px;
+  border-bottom-color: #4a4a50;
+  color: #b9b3a6;
+  background: linear-gradient(180deg, #35353b 0%, #26262b 100%);
+  font-size: 15px;
+  font-weight: 680;
+  letter-spacing: .03em;
+}
+
+.card-page.code-appearance-gamebox .code-window-controls,
+.measure-stage.code-appearance-gamebox .code-window-controls {
+  display: inline-flex;
+  grid-column: 1;
+  align-items: center;
+  gap: 7px;
+}
+
+/* 三颗水晶点：直接沿用 workskin 的 .crystal 径向渐变。 */
+.card-page.code-appearance-gamebox .code-window-dot,
+.measure-stage.code-appearance-gamebox .code-window-dot {
+  width: 11px;
+  height: 11px;
+  display: block;
+  border: 1px solid #b8965a;
+  border-radius: 50%;
+  background: radial-gradient(circle at 34% 28%, #cde9ff 0%, #5aa7e0 32%, #25609e 62%, #123c6b 100%);
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, .55), 0 0 9px rgba(90, 167, 224, .38);
+}
+
+.card-page.code-appearance-gamebox .code-language,
+.measure-stage.code-appearance-gamebox .code-language {
+  grid-column: 2;
+  color: #ffd700;
+  font-weight: 760;
+  letter-spacing: .05em;
+}
+
+.card-page.code-appearance-gamebox .code-meta,
+.measure-stage.code-appearance-gamebox .code-meta {
+  grid-column: 3;
+  color: #9a958a;
+}
+
+.card-page.code-appearance-gamebox .code-card pre,
+.measure-stage.code-appearance-gamebox .code-card pre {
+  padding: 22px 24px;
+  color: #e9e6df;
+  background: #2a2a2a;
+  line-height: 1.62;
+}
+
+.card-page.code-appearance-gamebox .code-lines,
+.measure-stage.code-appearance-gamebox .code-lines { padding-left: 62px !important; }
+
+.card-page.code-appearance-gamebox .code-line-list li::marker,
+.measure-stage.code-appearance-gamebox .code-line-list li::marker { color: #7b828b; }
+
+.card-page.code-appearance-gamebox .token.punctuation,
+.card-page.code-appearance-gamebox .token.operator,
+.card-page.code-appearance-gamebox .token.entity,
+.card-page.code-appearance-gamebox .token.url,
+.measure-stage.code-appearance-gamebox .token.punctuation,
+.measure-stage.code-appearance-gamebox .token.operator,
+.measure-stage.code-appearance-gamebox .token.entity,
+.measure-stage.code-appearance-gamebox .token.url { color: #b6bcc4; }
