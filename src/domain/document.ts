@@ -18,7 +18,8 @@ export type Block =
   | { id: string; kind: 'image'; url: string; alt: string; caption?: string }
   | { id: string; kind: 'table'; align: Array<'left' | 'center' | 'right' | null>; rows: Inline[][][]; caption?: string }
   | { id: string; kind: 'thematicBreak' }
-  | { id: string; kind: 'pageBreak' };
+  | { id: string; kind: 'pageBreak' }
+  | { id: string; kind: 'spacer'; lines: number };
 
 export interface Diagnostic {
   level: 'info' | 'warning' | 'error';

@@ -65,12 +65,30 @@ function nodeId(index: number, suffix = ''): string {
 
 const CAPTION_PARAGRAPH = /^(?:图|表)\s*[0-9０-９一二三四五六七八九十]+\s*(?:[.:：、·-]\s*|\s+).+$/;
 
+// `<br>` is the one piece of HTML this app speaks: on its own line it becomes
+// blank space, inline it becomes a line break.
+const BR_TAG = /<br\s*\/?>/i;
+const BR_TAG_GLOBAL = /<br\s*\/?>/gi;
+const BR_ONLY_LINE = /^\s*(?:<br\s*\/?>\s*)+$/i;
+const MAX_SPACER_LINES = 8;
+
+function splitInlineBreaks(value: string): Inline[] {
+  if (!BR_TAG.test(value)) return [{ kind: 'text', value }];
+  const segments = value.split(BR_TAG_GLOBAL);
+  const inlines: Inline[] = [];
+  segments.forEach((segment, index) => {
+    if (index > 0) inlines.push({ kind: 'break' });
+    if (segment) inlines.push({ kind: 'text', value: segment });
+  });
+  return inlines;
+}
+
 function toInline(nodes: MdNode[] | undefined): Inline[] {
   if (!nodes) return [];
   return nodes.flatMap((node): Inline[] => {
     switch (node.type) {
       case 'text':
-        return [{ kind: 'text', value: (node.value ?? '').replace(/\u200b/g, '') }];
+        return splitInlineBreaks((node.value ?? '').replace(/\u200b/g, ''));
       case 'strong':
         return [{ kind: 'strong', children: toInline(node.children) }];
       case 'emphasis':
@@ -85,6 +103,13 @@ function toInline(nodes: MdNode[] | undefined): Inline[] {
         return [{ kind: 'inlineMath', value: node.value ?? '' }];
       case 'break':
         return [{ kind: 'break' }];
+      case 'html': {
+        // Inline HTML is dropped everywhere except `<br>`, which stays a line break.
+        const raw = (node.value ?? '').trim();
+        if (!BR_ONLY_LINE.test(raw)) return [];
+        const count = raw.match(BR_TAG_GLOBAL)?.length ?? 1;
+        return Array.from({ length: count }, (): Inline => ({ kind: 'break' }));
+      }
       case 'image':
         return [{ kind: 'text', value: `[图片：${node.value ?? '请通过资源面板导入'}]` }];
       default:
@@ -117,10 +142,16 @@ function toBlock(node: MdNode, index: number, diagnostics: Diagnostic[], suffix 
       return { id, kind: 'math', value: node.value ?? '' };
     case 'thematicBreak':
       return { id, kind: 'thematicBreak' };
-    case 'html':
-      if ((node.value ?? '').trim() === '<!-- md2card:break -->') return { id, kind: 'pageBreak' };
+    case 'html': {
+      const raw = (node.value ?? '').trim();
+      if (raw === '<!-- md2card:break -->') return { id, kind: 'pageBreak' };
+      if (BR_ONLY_LINE.test(raw)) {
+        const lines = raw.match(BR_TAG_GLOBAL)?.length ?? 1;
+        return { id, kind: 'spacer', lines: Math.min(MAX_SPACER_LINES, Math.max(1, lines)) };
+      }
       diagnostics.push({ level: 'warning', message: '已忽略原始 HTML，以保证预览和导出安全一致。', blockId: id });
       return null;
+    }
     case 'blockquote': {
       const children = (node.children ?? [])
         .map((child, childIndex) => toBlock(child, index, diagnostics, `-quote-${childIndex}`))
