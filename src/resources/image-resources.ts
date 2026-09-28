@@ -197,3 +197,43 @@ export function summarizeImageBindings(
   }
   return summary;
 }
+
+/**
+ * The reference to write into Markdown for an imported image. The most specific
+ * alias the current index already binds to this image wins, so a pasted
+ * reference cannot be shadowed by a same-named file in another directory.
+ */
+export function preferredImageReference(
+  image: LocalImageLike,
+  index?: ImageResourceIndex,
+): string {
+  const paths = (image.paths?.length ? image.paths : [image.name])
+    .map(normalizeImagePath)
+    .filter(Boolean);
+  if (index && image.id) {
+    const bound = paths
+      .flatMap(pathAliases)
+      .filter((alias) => index.sourceImageIds[alias] === image.id)
+      .sort((left, right) => right.length - left.length);
+    if (bound.length) return bound[0];
+  }
+  return paths[0] ?? image.name;
+}
+
+function escapeImageAlt(value: string): string {
+  return value.replace(/[\\[\]]/g, (match) => `\\${match}`);
+}
+
+/**
+ * `![name](path)`, ready to paste into the Markdown editor. Destinations that
+ * contain spaces, parentheses or angle brackets use the CommonMark `<...>` form
+ * so the link stays one token.
+ */
+export function imageMarkdownSnippet(
+  image: LocalImageLike,
+  index?: ImageResourceIndex,
+): string {
+  const reference = preferredImageReference(image, index);
+  const destination = /[\s()<>]/.test(reference) ? `<${reference}>` : reference;
+  return `![${escapeImageAlt(image.name)}](${destination})`;
+}

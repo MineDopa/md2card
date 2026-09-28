@@ -31,6 +31,7 @@ export function ImageManagerDialog({
     notice: ImageManagerNotice | null;
     selectedReference: string | null;
     imageReferences: ImageReference[];
+    imageSnippets: Map<string, string>;
     localImages: LocalImage[];
     localImagesById: Map<string, LocalImage>;
     imageBindingOverrides: Record<string, string>;
@@ -49,6 +50,7 @@ export function ImageManagerDialog({
     removeImage: (imageId: string) => void;
     clearUnusedImages: () => void;
     clearAllImages: () => void;
+    insertImageMarkdown: (imageId: string) => void;
     getImageId: (image: LocalImage, index: number) => string;
   };
 }) {
@@ -60,6 +62,7 @@ export function ImageManagerDialog({
     notice,
     selectedReference,
     imageReferences,
+    imageSnippets,
     localImages,
     localImagesById,
     imageBindingOverrides,
@@ -78,6 +81,7 @@ export function ImageManagerDialog({
     removeImage,
     clearUnusedImages,
     clearAllImages,
+    insertImageMarkdown,
     getImageId,
   } = actions;
 
@@ -311,6 +315,7 @@ export function ImageManagerDialog({
                   const id = getImageId(image, index);
                   const objectUrl = resourceObjectUrls[id];
                   const usage = imageUsageCount.get(id) ?? 0;
+                  const snippet = imageSnippets.get(id);
                   return (
                     <article key={id} class="image-manager-item">
                       <div class="image-manager-thumbnail">
@@ -344,12 +349,29 @@ export function ImageManagerDialog({
                         )}
                         <button
                           type="button"
+                          class="image-manager-insert"
+                          disabled={!snippet}
+                          onClick={() => insertImageMarkdown(id)}
+                          title="生成 Markdown 图片链接并复制，粘贴到编辑器即可插入"
+                        >
+                          插入图片
+                        </button>
+                        <button
+                          type="button"
                           class="image-manager-remove"
                           onClick={() => removeImage(id)}
                         >
                           移除
                         </button>
                       </div>
+                      {snippet && (
+                        <code
+                          class="image-manager-snippet"
+                          title="粘贴到 Markdown 编辑器的链接"
+                        >
+                          {snippet}
+                        </code>
+                      )}
                     </article>
                   );
                 })}

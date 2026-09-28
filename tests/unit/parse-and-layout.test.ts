@@ -8,6 +8,7 @@ import { parseMarkdown } from '../../src/parser/parse-markdown';
 import {
   articleImageUrls,
   buildImageResourceIndex,
+  imageMarkdownSnippet,
   resolveImageReference,
   summarizeImageBindings,
 } from '../../src/resources/image-resources';
@@ -311,6 +312,53 @@ describe('本地图片文件夹绑定', () => {
       matched: 2,
       missing: ['images/diagram.png'],
       ambiguous: [],
+    });
+  });
+});
+
+describe('已导入图片的插入链接', () => {
+  it('生成的 Markdown 语法能被解析回同一张图片', () => {
+    const image = { id: 'cover', name: 'cover.png', paths: ['assets/cover.png'] };
+    const index = buildImageResourceIndex([image], { cover: 'blob:cover' });
+    const snippet = imageMarkdownSnippet(image, index);
+    expect(snippet).toBe('![cover.png](assets/cover.png)');
+    const [url] = articleImageUrls(parseMarkdown(snippet));
+    expect(resolveImageReference(url, index)).toEqual({
+      state: 'matched',
+      source: 'blob:cover',
+      imageId: 'cover',
+    });
+  });
+
+  it('同名图片存在冲突时写入最具体的路径', () => {
+    const images = [
+      { id: 'first', name: 'diagram.png', paths: ['first/diagram.png'] },
+      { id: 'second', name: 'diagram.png', paths: ['second/diagram.png'] },
+    ];
+    const index = buildImageResourceIndex(images, {
+      first: 'blob:first',
+      second: 'blob:second',
+    });
+    const snippet = imageMarkdownSnippet(images[1], index);
+    expect(snippet).toBe('![diagram.png](second/diagram.png)');
+    const [url] = articleImageUrls(parseMarkdown(snippet));
+    expect(resolveImageReference(url, index)).toEqual({
+      state: 'matched',
+      source: 'blob:second',
+      imageId: 'second',
+    });
+  });
+
+  it('含空格的路径使用尖括号目标形式', () => {
+    const image = { id: 'space', name: 'a b.png', paths: ['assets/a b.png'] };
+    const index = buildImageResourceIndex([image], { space: 'blob:space' });
+    const snippet = imageMarkdownSnippet(image, index);
+    expect(snippet).toBe('![a b.png](<assets/a b.png>)');
+    const [url] = articleImageUrls(parseMarkdown(snippet));
+    expect(resolveImageReference(url, index)).toEqual({
+      state: 'matched',
+      source: 'blob:space',
+      imageId: 'space',
     });
   });
 });

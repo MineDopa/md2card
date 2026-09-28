@@ -4,6 +4,7 @@ import { parseMarkdown } from "../../parser/parse-markdown";
 import {
   articleImageUrls,
   buildImageResourceIndex,
+  imageMarkdownSnippet,
   isRemoteImageUrl,
   normalizeImagePath,
   resolveImageReference,
@@ -42,6 +43,36 @@ type DirectoryPickerWindow = Window & {
 export function localImageId(image: LocalImage, index = 0): string {
   const fallbackPath = image.paths?.[0] ?? image.name;
   return image.id ?? `legacy-${index}-${normalizeImagePath(fallbackPath)}`;
+}
+
+/**
+ * Copies text with the async Clipboard API and falls back to a hidden textarea,
+ * because the async API is unavailable when the page is not a secure context.
+ */
+async function writeClipboardText(text: string): Promise<boolean> {
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+  } catch {
+    // Permission denied or insecure context: fall through to the legacy copy.
+  }
+  try {
+    const helper = document.createElement("textarea");
+    helper.value = text;
+    helper.setAttribute("readonly", "");
+    helper.style.position = "fixed";
+    helper.style.top = "-1000px";
+    helper.style.opacity = "0";
+    document.body.appendChild(helper);
+    helper.select();
+    const copied = document.execCommand("copy");
+    helper.remove();
+    return copied;
+  } catch {
+    return false;
+  }
 }
 
 function restoreLocalImage(image: LocalImage, index: number): LocalImage {
@@ -275,6 +306,17 @@ export function useImageResources({
     });
     return count;
   }, [imageReferences]);
+  /** Markdown syntax per imported image, keyed by image id. */
+  const imageSnippets = useMemo(
+    () =>
+      new Map(
+        localImages.map((image, index) => [
+          localImageId(image, index),
+          imageMarkdownSnippet(image, resources),
+        ]),
+      ),
+    [localImages, resources],
+  );
   const unusedImageCount = localImages.filter(
     (image, index) => !imageUsageCount.has(localImageId(image, index)),
   ).length;
@@ -652,6 +694,28 @@ export function useImageResources({
     removeImagesById(ids, `已清理 ${ids.size} 张未被当前 Markdown 引用的图片。`);
   };
 
+  /**
+   * The manager dialog sits on top of the editor, so it hands the generated
+   * Markdown image syntax to the clipboard instead of typing into the textarea.
+   */
+  const insertImageMarkdown = (imageId: string) => {
+    const snippet = imageSnippets.get(imageId);
+    if (!snippet) return;
+    void writeClipboardText(snippet).then((copied) => {
+      setImageManagerNotice(
+        copied
+          ? {
+              kind: "success",
+              message: `已复制 ${snippet}，粘贴到 Markdown 编辑器即可插入。`,
+            }
+          : {
+              kind: "error",
+              message: `浏览器未允许写入剪贴板，请手动复制：${snippet}`,
+            },
+      );
+    });
+  };
+
   const clearArticleResources = () => {
     setSelectedImageReference(null);
     setPendingBindingReference(null);
@@ -720,9 +784,11 @@ export function useImageResources({
     imageManagerNotice,
     imageManagerOpen,
     imageReferences,
+    imageSnippets,
     imageUsageCount,
     importCurrentReferenceFolder,
     importMarkdownAssetFolder,
+    insertImageMarkdown,
     localImageReferences,
     localImageId,
     localImages,

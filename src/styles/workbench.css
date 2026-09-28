@@ -130,6 +130,8 @@
 :root[data-ui-theme="dark"] .image-manager-remove,
 :root[data-ui-theme="dark"] .image-manager-clear { border-color: #754a57; color: #ffd2ca; background: #3c2636; }
 :root[data-ui-theme="dark"] .image-manager-use { border-color: #3e7152; color: #b2e3be; background: #203d30; }
+:root[data-ui-theme="dark"] .image-manager-insert { border-color: #4b4b6b; color: #ded9f2; background: #24243c; }
+:root[data-ui-theme="dark"] .image-manager-snippet { border-color: #454564; color: #d5ceff; background: #1e1e33; }
 :root[data-ui-theme="dark"] .image-manager-empty { border-color: #3c3c5a; color: #c6c2dc; background: #1a1a2e; }
 :root[data-ui-theme="dark"] .image-reference-item { border-color: #3c3c5a; background: #1a1a2e; }
 :root[data-ui-theme="dark"] .image-reference-item.missing { border-color: #754a57; background: #30202e; }

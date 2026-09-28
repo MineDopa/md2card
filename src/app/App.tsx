@@ -150,9 +150,11 @@ export function App() {
     imageManagerNotice,
     imageManagerOpen,
     imageReferences,
+    imageSnippets,
     imageUsageCount,
     importCurrentReferenceFolder,
     importMarkdownAssetFolder,
+    insertImageMarkdown,
     localImageReferences,
     localImageId,
     localImages,
@@ -451,6 +453,7 @@ export function App() {
             notice: imageManagerNotice,
             selectedReference: selectedImageReference,
             imageReferences,
+            imageSnippets,
             localImages,
             localImagesById,
             imageBindingOverrides,
@@ -469,6 +472,7 @@ export function App() {
             removeImage: removeLocalImage,
             clearUnusedImages,
             clearAllImages: clearLocalImages,
+            insertImageMarkdown,
             getImageId: localImageId,
           }}
         />

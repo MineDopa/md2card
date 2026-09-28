@@ -1,102 +1,246 @@
-/* 星海回响: 纯净排版的阅读骨架，叠上 FF14 的界面语法。
+/* 星海回响 · Eorzea 主题（v2：对齐 Figma 设计稿实测值）
  *
- * 取色直接来自 AO3 workskin 里的 .gamebox / .crystal / .NoteSheet：
- * 深灰面板 #2a2a2a、金色 #ffd700、羊皮纸淡金 #f0d5a2、水晶蓝 #5aa7e0。
- * 卡片正文仍然保持浅色底，只有「框」走深色信息框——封面、引用与代码块，
- * 其余节奏沿用纯净排版，保证小红书上的长文可读性。
+ * 颜色逻辑：
+ *   --theme-*  全局语义角色（base.css 的组件规则直接消费）——换主题整组迁移。
+ *   --ff-*     本主题签名色、尺寸与素材地址，只被本文件引用。
+ *   规则区不出现裸色值，所有颜色都能在两个 token 区找到出处。
+ *
+ * 尺寸来源：Figma Dev Mode 导出 + 对设计稿缩略图逐像素测量（1080×1440 基准）：
+ *   内容左边界 76（应用卡边距 40 + 本主题再内缩 38）、封面框 939×228、
+ *   封面徽章 192×192（top 13 / right 34）、牌匾 639×90（左起 33）、
+ *   牌匾徽章 100×100（左 -27）、引用框描边 3px 圆角 30 填充 #E6DED4、
+ *   列表数字徽章 34×34（黄铜 #B8965A 渐变）、页脚细线 #E0DAC9 + 墨金页码。
+ *
+ * 九宫格素材：全部放在 public/themes/eorzea/。
+ *   ⚠ 切片数值一律按「素材原图像素 1:1」写，不要再乘 2 —— 乘了就会把素材里
+ *     更大的一块塞进小边框，边框比例立刻走形（v1 就是这个错）。
+ *   封面框 64×512 → 切片 51.2 / 25.6（= Figma 里那 9 个 Rectangle 的原始尺寸）。
+ *   牌匾   596×84  → 切片 上14 右40 下14 左60，按显示高度 90 等比换算边框宽度。
  *
  * 全部为静态样式：不使用 :hover、transition 与 animation，
- * 因为卡片最终导出为静态位图，交互态无法保留。 */
-.theme-eorzea {
-  --ff-panel: #2a2a2e;
-  --ff-panel-raised: #33333a;
-  --ff-panel-line: #4a4a52;
-  --ff-gold: #c9a227;
-  --ff-gold-bright: #ffd700;
-  --ff-gold-ink: #8a6a1c;
-  --ff-parchment: #f0d5a2;
-  --ff-crystal: #5aa7e0;
+ * 卡片最终导出为静态位图，交互态无法保留。 */
 
+.theme-eorzea {
+/* ================================================================
+ * 1. Token 区 —— 语义角色（base.css 消费）
+ * ================================================================ */
   --theme-surface: #fbfaf6;
   --theme-surface-container-low: #f7f4ec;
   --theme-surface-container: #eeece3;
   --theme-surface-container-high: #e4e1d6;
-  --theme-on-surface: #23262c;
+
+  --theme-on-surface: #23262c;          /* Shark：正文 */
   --theme-on-surface-variant: #5c616b;
-  --theme-primary: #2a6f9e;
+
+  --theme-primary: #2a6f9e;             /* 水晶蓝：链接 / H3 / 无序列表标记 */
   --theme-primary-container: #dbe9f2;
   --theme-on-primary-container: #10344d;
+
   --theme-outline: #7f8794;
-  --theme-outline-variant: #dcd8ca;
-  --theme-code-surface: #2a2a2e;
+  --theme-outline-variant: #ddd7c6;     /* Tana：表格框 / 细线 */
+
+  --theme-code-surface: #2a2a2e;        /* 深灰 gamebox */
   --theme-code-toolbar: #33333a;
-  --theme-table-surface: #f8f6f0;
-  --theme-table-header: #2f3a46;
+
+  --theme-table-surface: #f8f6f0;       /* Spring Wood */
+  --theme-table-header: #2f3a46;        /* Oxford Blue */
   --theme-table-row-odd: #fbfaf6;
   --theme-table-row-even: #f4f2ea;
   --theme-table-shadow: 4px 7px 16px rgba(20, 26, 34, .06);
+
   --theme-math-surface: #f7f4ec;
-  /* 代码面是深灰面板，因此语法色按深底配色。 */
+
   --theme-syntax-comment: #8b9099;
   --theme-syntax-keyword: #e8c46a;
   --theme-syntax-string: #86c9a4;
   --theme-syntax-function: #7fb6e6;
   --theme-syntax-number: #eda15c;
+
   --shape-technical: 5px;
   --shape-container: 10px;
   --shape-cover: 18px;
+
   --heading-marker-width: 122px;
   --heading-marker-height: 4px;
   --heading-marker-radius: 2px;
-  --cover-decoration: #7fb6e6;
+
+/* ================================================================
+ * 2. Token 区 —— Eorzea 签名色 / 尺寸 / 素材（仅本文件消费）
+ * ================================================================ */
+  /* 金阶 */
+  --ff-gold: #c9a227;
+  --ff-gold-bright: #ffd700;            /* Gold：封面标题 */
+  --ff-gold-ink: #8a6a1c;               /* Kumera：页码 / 行内代码字 */
+  --ff-brass: #b8965a;                  /* 黄铜：徽章、边框、装饰 */
+  --ff-parchment: #f0d5a2;
+
+  /* 卡面：羊皮纸冷白 + 右上角暖棕光晕（Figma 径向渐变） */
+  --ff-surface-image: radial-gradient(166.67% 125% at 100% 0%, rgba(230, 208, 179, .25) 0%, #f8f2ed 27%);
+
+  /* 内容内缩：设计稿所有块距卡边 76 → 应用卡边距 40 + 本主题 38 */
+  --ff-content-inset: 38px;
+
+  /* 封面 */
+  --ff-cover-panel: #313130;   /* 设计稿实测封面底色 */
+  --ff-cover-ink: #d9d2c2;
+  --ff-cover-shadow: 0 14px 30px rgba(16, 18, 24, .18);
+  --ff-cover-height: 228px;             /* Figma section.card-cover */
+  --ff-cover-gap-top: 16px;
+  --ff-cover-emblem-size: 192px;        /* Figma image 5 */
+  --ff-cover-emblem-top: 13px;
+  --ff-cover-emblem-right: 34px;
+
+  /* 引用框：浅羊皮纸底 + 深棕细描边 + Desert 墨色 */
+  --ff-quote-surface: linear-gradient(180deg, #eae1d6 0%, #e6ded4 42%, #e2d8cc 100%);
+  --ff-quote-border: #3a3226;
+  --ff-quote-border-width: 3px;
+  --ff-quote-radius: 30px;
+  --ff-quote-pad: 20px 35px;
+  --ff-quote-inner-line: rgba(184, 150, 90, .38);
+  --ff-quote-shadow: 0 8px 16px rgba(58, 50, 38, .10);
+  --ff-quote-ink: #a26022;              /* Desert */
+
+  /* 行内代码：Janna 底 + Kumera 字 */
+  --ff-inline-code-surface: #f6efda;
+  --ff-inline-code-border: #e2d6b2;
+  --ff-inline-radius: 5px;
+
+  /* 有序列表数字徽章：黄铜渐变 + 米白数字 */
+  --ff-badge-surface: linear-gradient(180deg, #d9b667 0%, #b8965a 100%);
+  --ff-badge-ink: #fffdf6;
+  --ff-badge-size: 34px;
+  --ff-badge-radius: 6px;
+
+  /* 牌匾（H2）：639×90，左起 33；文字左起 75；
+     Figma 文字层实测 36px / 59px 行高 / Times 700 / #252520 */
+  --ff-plaque-ink: #252520;
+  --ff-plaque-font: 36px;
+  --ff-plaque-line: 59px;
+  --ff-plaque-width: 639px;
+  --ff-plaque-height: 90px;
+  --ff-plaque-offset: 33px;
+  --ff-plaque-pad-left: 75px;
+
+  /* H2 徽章：100×100，压在牌匾左端（Figma image 8：left 11） */
+  --ff-h2-emblem-size: 100px;
+  --ff-h2-emblem-offset: -27px;
+
+  /* 页脚 */
+  --ff-footer-line: #e0dac9;            /* Satin Linen */
+  --ff-footer-emblem-width: 37px;
+  --ff-footer-emblem-height: 52px;
+  --ff-footer-emblem-gap: 16px;
+
+  /* 素材（public/themes/eorzea/） */
+  --ff-cover-frame: url('/themes/eorzea/cover-frame.png');
+  /* 九宫格切片：按素材实测描边位置，1:1（见规则区注释） */
+  --ff-cover-frame-slice: 7 6 8 4;
+  --ff-cover-frame-w: 7px 6px 8px 4px;
+  --ff-cover-emblem: url('/themes/eorzea/cover-emblem.png');
+  --ff-h2-plaque: url('/themes/eorzea/h2-plaque.png');
+  --ff-h2-emblem: url('/themes/eorzea/h2-emblem.png');
+  --ff-footer-emblem: url('/themes/eorzea/footer-emblem.png');
 }
 
-/* 卡面：羊皮纸冷白 + 极淡星尘点纹 + 右上角水晶光晕。 */
-.card-page.theme-eorzea {
-  background: #fbfaf6;
-  background-image: radial-gradient(circle at 100% 0%, rgba(42, 111, 158, .10), transparent 27%),
-    radial-gradient(rgba(118, 114, 102, .11) .8px, transparent .8px);
-  background-size: auto, 9px 9px;
+/* ================================================================
+ * 3. 卡面与内容内缩
+ * ================================================================ */
+.card-page.theme-eorzea,
+.measure-stage.theme-eorzea {
+  background-color: var(--theme-surface);
+  background-image: var(--ff-surface-image);
 }
 
-/* 首卡封面：完整的 gamebox 深灰面板，金标题 + 水晶光点。 */
+/* 设计稿里正文、引用框、表格、牌匾都距卡边 76px，
+   而卡边距由应用设置（默认 40），所以主题再补 38。
+   MeasureStage 收到同样的类，排版高度因此保持一致。 */
+.theme-eorzea .card-content {
+  padding-left: var(--ff-content-inset);
+  padding-right: var(--ff-content-inset);
+}
+.theme-eorzea .card-footer {
+  margin-left: var(--ff-content-inset);
+  margin-right: var(--ff-content-inset);
+}
+
+/* ================================================================
+ * 4. 封面：harpoon 窗口框（九宫格素材）+ 任务徽章
+ * ================================================================ */
 .theme-eorzea .card-cover {
   position: relative;
-  min-height: 206px;
-  padding: 30px 34px 32px;
-  border: 1px solid #f2f2f4;
-  border-radius: var(--shape-cover);
-  background: radial-gradient(ellipse at 24% 12%, rgba(255, 255, 255, .07), transparent 54%),
-    radial-gradient(ellipse at 78% 92%, rgba(0, 0, 0, .30), transparent 56%),
-    linear-gradient(135deg, #33333a 0%, #2a2a2e 46%, #22222a 100%);
-  box-shadow: 0 14px 30px rgba(16, 18, 24, .18), inset 0 1px 0 rgba(255, 255, 255, .10);
+  min-height: var(--ff-cover-height);
+  margin: var(--ff-cover-gap-top) 0 0;
+  padding: 34px 40px;
+  border: 0;
+  border-radius: 0;
+  background: var(--ff-cover-panel);
+  box-shadow: var(--ff-cover-shadow);
 }
 
-.theme-eorzea .card-cover-decoration {
-  right: 30px;
-  top: 30px;
-  width: 26px;
-  height: 26px;
-  border: 2px solid #b8965a;
-  border-radius: 50%;
-  background: radial-gradient(circle at 34% 28%, #cde9ff 0%, var(--ff-crystal) 34%, #25609e 64%, #123c6b 100%);
-  box-shadow: inset 0 1px 2px rgba(255, 255, 255, .55), 0 0 12px rgba(90, 167, 224, .45);
-  opacity: 1;
+/* 九宫格金边：素材已在 public/themes/eorzea/ 裁掉四周 5px 透明留白（原 64×512 → 54×487）。
+   ⚠ 切片数值 = 素材里描边的真实像素位置，1:1 直接抄，不要再乘 2，也不要凑 Figma 的显示尺寸：
+     左金轨 x0–3  → 左切片 4
+     右金轨 x48–51 → 右切片 6（54-48）
+     顶金线 y0–2 + 暗影 y3–6 → 上切片 7
+     底金线 y480–482 + 暗影 y483–486 → 下切片 8（487-479）
+   中段（渐变压平区）交给 stretch 拉伸，所以整块框随封面尺寸伸缩而不走形。 */
+.theme-eorzea .card-cover::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-style: solid;
+  border-color: transparent;
+  border-width: var(--ff-cover-frame-w);
+  border-image: var(--ff-cover-frame) var(--ff-cover-frame-slice) fill / var(--ff-cover-frame-w) / 0 stretch;
+  pointer-events: none;
 }
 
-.theme-eorzea .card-cover-kicker { color: var(--ff-parchment); letter-spacing: .16em; }
-.theme-eorzea .card-cover-title { color: var(--ff-gold-bright); }
-.theme-eorzea .card-cover-subtitle { color: #c8c2b4; }
+/* 封面徽章：quest1 图标，192×192，右上内缩 13 / 34 */
+.theme-eorzea .card-cover::after {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  right: var(--ff-cover-emblem-right);
+  top: var(--ff-cover-emblem-top);
+  width: var(--ff-cover-emblem-size);
+  height: var(--ff-cover-emblem-size);
+  background: var(--ff-cover-emblem) center / contain no-repeat;
+  pointer-events: none;
+}
+
+/* 水晶光点是素材缺失时的兜底，素材就位后隐藏 */
+.theme-eorzea .card-cover-decoration { display: none; }
+
+.theme-eorzea .card-cover-kicker {
+  color: var(--ff-parchment);
+  letter-spacing: .16em;
+}
+
+/* 封面标题：Figma = 50px / 740 / 66px 行高 / -1.824px 字距；
+   max-width 按 Figma 的 right:275.77 收窄，避免压到右侧徽章。 */
+.theme-eorzea .card-cover-title {
+  color: var(--ff-gold-bright);
+  font-size: 50px;
+  font-weight: 740;
+  line-height: 66px;
+  letter-spacing: -1.824px;
+  max-width: calc(100% - 250px);
+}
+.theme-eorzea .card-cover.cover-title-long .card-cover-title { font-size: 50px; }
+.theme-eorzea .card-cover.cover-title-xlong .card-cover-title { font-size: 44px; }
+
+.theme-eorzea .card-cover-subtitle { color: var(--ff-cover-ink); }
 .theme-eorzea .card-content.cover-only .card-cover { padding: 72px 58px; }
 
-/* 标题：H2 用金色渐隐短横线，H3 用水晶蓝竖标。 */
-.theme-eorzea .heading.depth-2::after {
-  background: linear-gradient(90deg, var(--ff-gold) 0 58%, rgba(201, 162, 39, .26) 58%);
-}
+/* ================================================================
+ * 5. 标题
+ * ================================================================ */
+/* H3：水晶蓝竖标 */
 .theme-eorzea .heading.depth-3 { color: var(--theme-primary); }
 .theme-eorzea .heading.depth-3::before { background: var(--theme-primary); }
 
-/* 分隔线：workskin 里 hr.time 的 ✧ ⌛ ✧ 母题，改用不会掉色的符号。 */
+/* 分隔线：workskin hr.time 的 ✧ ◆ ✧ 母题 */
 .theme-eorzea hr {
   position: relative;
   width: 58%;
@@ -117,54 +261,158 @@
   white-space: nowrap;
 }
 
-/* 引用块：FF14 的对话 / 系统提示框。 */
+/* H2 牌匾（::before 画牌匾底图，::after 放左侧徽章）：
+   牌匾素材 596×84 → 切片 上14 右40 下14 左60，
+   按显示高度 90 等比换算边框宽度 15 / 43 / 15 / 64；
+   高度跟随标题行数（上下边框固定，中段纵向拉伸）。
+   标题 max-width 收在牌匾内，长标题会换行而不是把牌匾撑破。 */
+.theme-eorzea .heading.depth-2 {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: var(--ff-plaque-height);
+  max-width: calc(var(--ff-plaque-offset) + var(--ff-plaque-width) + 20px);
+  padding: 0 20px 0 var(--ff-plaque-pad-left);
+  color: var(--ff-plaque-ink);
+  font-size: var(--ff-plaque-font);
+  line-height: var(--ff-plaque-line);
+}
+.theme-eorzea .heading.depth-2::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  left: var(--ff-plaque-offset);
+  top: 0;
+  bottom: 0;
+  width: var(--ff-plaque-width);
+  border-style: solid;
+  border-color: transparent;
+  border-width: 15px 43px 15px 64px;
+  border-image: var(--ff-h2-plaque) 14 40 14 60 fill / 15px 43px 15px 64px stretch;
+  pointer-events: none;
+}
+/* ::after 原来是金色渐隐短横线，牌匾自带金边后改用徽章位 */
+.theme-eorzea .heading.depth-2::after {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  left: var(--ff-h2-emblem-offset);
+  bottom: auto;
+  top: 50%;
+  transform: translateY(-50%);
+  width: var(--ff-h2-emblem-size);
+  height: var(--ff-h2-emblem-size);
+  border-radius: 0;
+  background: var(--ff-h2-emblem) center / contain no-repeat;
+  pointer-events: none;
+}
+
+/* ================================================================
+ * 6. 引用块 / 行内代码
+ * ================================================================ */
+/* 引用块：设计稿是「深棕细描边 + 圆角 30 + 羊皮纸底」的小牌，
+   不是粗框九宫格；内圈金线用 inset 阴影模拟。 */
 .theme-eorzea blockquote {
-  padding: 18px 22px;
-  border: 0;
-  border-left: 4px solid var(--ff-gold);
-  border-radius: 0 var(--shape-container) var(--shape-container) 0;
-  color: #ece9e2;
-  background: var(--ff-panel);
-  box-shadow: 0 9px 20px rgba(16, 18, 24, .16);
+  padding: var(--ff-quote-pad);
+  border: var(--ff-quote-border-width) solid var(--ff-quote-border);
+  border-radius: var(--ff-quote-radius);
+  color: var(--ff-quote-ink);
+  background: var(--ff-quote-surface);
+  box-shadow: inset 0 0 0 1px var(--ff-quote-inner-line), var(--ff-quote-shadow);
 }
+.theme-eorzea blockquote strong { color: var(--ff-quote-ink); }
 
-/* 行内代码保持浅色，避免正文里出现突兀的深色碎片。 */
+/* 行内代码：Janna 底 + Kumera 字 */
 .theme-eorzea .inline-code {
-  border-color: #e2d6b2;
+  border-color: var(--ff-inline-code-border);
+  border-radius: var(--ff-inline-radius);
   color: var(--ff-gold-ink);
-  background: #f6efda;
+  background: var(--ff-inline-code-surface);
 }
 
-.theme-eorzea .content-block a { color: var(--theme-primary); text-decoration-color: rgba(42, 111, 158, .45); }
-.theme-eorzea .markdown-list li::marker { color: var(--theme-primary); }
+/* ================================================================
+ * 7. 列表
+ * ================================================================ */
+/* 无序列表：水晶蓝圆点 */
+.theme-eorzea .markdown-list li::marker {
+  color: var(--theme-primary);
+  font-weight: 800;
+}
 
-/* 表格：深色表头 + 羊皮纸斑马纹，对应 gamebox 的 .h2 深底金标题。 */
+/* 有序列表：黄铜渐变方形数字徽章（纯 CSS 计数器，不需要素材） */
+.theme-eorzea ol.markdown-list {
+  padding-left: 0;
+  list-style: none;
+  counter-reset: ff-item;
+}
+.theme-eorzea ol.markdown-list li {
+  position: relative;
+  min-height: var(--ff-badge-size);
+  padding-left: calc(var(--ff-badge-size) + 14px);
+  counter-increment: ff-item;
+}
+.theme-eorzea ol.markdown-list li::marker { content: none; }
+.theme-eorzea ol.markdown-list li::before {
+  content: counter(ff-item);
+  position: absolute;
+  left: 0;
+  top: 1px;
+  width: var(--ff-badge-size);
+  height: var(--ff-badge-size);
+  display: grid;
+  place-items: center;
+  border-radius: var(--ff-badge-radius);
+  color: var(--ff-badge-ink);
+  background: var(--ff-badge-surface);
+  font-family: var(--font-code);
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* 链接：水晶蓝 */
+.theme-eorzea .content-block a {
+  color: var(--theme-primary);
+  text-decoration-color: rgba(42, 111, 158, .45);
+}
+
+/* ================================================================
+ * 8. 表格
+ * ================================================================ */
 .theme-eorzea .table-frame {
-  border-color: #ddd7c6;
+  border-color: var(--theme-outline-variant);
   background: var(--theme-table-surface);
   box-shadow: var(--theme-table-shadow);
 }
 .theme-eorzea .table-frame th {
   border-bottom: 1px solid #1d242c;
-  color: #f2efe8;
+  color: #f2efe8;                       /* Pampas */
   background: var(--theme-table-header);
 }
-.theme-eorzea .table-frame td { border-bottom-color: #e6e0d0; }
+.theme-eorzea .table-frame td { border-bottom-color: var(--theme-outline-variant); }
 
-.theme-eorzea .image-card { border-color: #ded4bd; background: #f8f5ee; }
+.theme-eorzea .image-card {
+  border-color: var(--theme-outline-variant);
+  background: var(--theme-surface-container-low);
+}
 .theme-eorzea .image-card figcaption,
-.theme-eorzea .table-card figcaption { border-top-color: #e2dccb; color: var(--theme-on-surface-variant); }
+.theme-eorzea .table-card figcaption {
+  border-top-color: var(--theme-outline-variant);
+  color: var(--theme-on-surface-variant);
+}
 
-/* 跟随主题时的代码面：深灰 gamebox，无窗口按钮与白边。 */
+/* ================================================================
+ * 9. 代码块：深灰 gamebox 面板
+ * ================================================================ */
 .theme-eorzea .code-card {
-  border: 1px solid var(--ff-panel-line);
+  border: 1px solid #4a4a52;
   border-radius: 12px;
   background: var(--theme-code-surface);
   box-shadow: 0 10px 22px rgba(16, 18, 24, .16);
 }
 .theme-eorzea .code-toolbar {
-  border-bottom-color: var(--ff-panel-line);
-  color: #c8c2b4;
+  border-bottom-color: #4a4a52;
+  color: var(--ff-cover-ink);
   background: var(--theme-code-toolbar);
 }
 .theme-eorzea .code-language { color: var(--ff-gold); }
@@ -172,7 +420,33 @@
 .theme-eorzea .code-card pre { color: #e9e6df; }
 .theme-eorzea .code-line-list li::marker { color: #7b828b; }
 
-/* 续页标签与页码：羊皮纸小牌 + 金色页码。 */
-.theme-eorzea .continuation-label { color: #2a2a2e; background: #eadfb8; }
-.theme-eorzea .card-footer { border-color: #e0dac9; color: var(--theme-on-surface-variant); }
-.theme-eorzea .page-number { color: var(--ff-gold-ink); }
+/* ================================================================
+ * 10. 续页标签与页脚
+ * ================================================================ */
+.theme-eorzea .continuation-label {
+  color: #2a2a2e;
+  background: #eadfb8;
+}
+
+/* 页脚：Satin Linen 细线 + JetBrains Mono 墨金页码 + 右侧金徽章（Slice 8） */
+.theme-eorzea .card-footer {
+  position: relative;
+  padding-right: calc(var(--ff-footer-emblem-width) + var(--ff-footer-emblem-gap));
+  border-color: var(--ff-footer-line);
+  color: var(--theme-on-surface-variant);
+}
+.theme-eorzea .card-footer::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: -6px;
+  width: var(--ff-footer-emblem-width);
+  height: var(--ff-footer-emblem-height);
+  background: var(--ff-footer-emblem) center / contain no-repeat;
+  pointer-events: none;
+}
+.theme-eorzea .page-number {
+  color: var(--ff-gold-ink);
+  font-size: 18px;
+  font-weight: 700;
+}

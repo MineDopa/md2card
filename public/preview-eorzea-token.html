@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Eorzea 主题验证页 · 对齐 Figma 设计稿</title>
+<link rel="stylesheet" href="/src/styles/app.css?direct">
+<link rel="stylesheet" href="/src/styles/cards/base.css?direct">
+<link rel="stylesheet" href="/src/styles/cards/code-appearance.css?direct">
+<link rel="stylesheet" href="/src/styles/cards/themes/eorzea.css?direct">
+<style>
+  /* 验证页外壳，不属于卡片本身 */
+  html, body { margin: 0; padding: 0; background: #e8e6e1; overflow: visible !important; height: auto !important; min-height: 0 !important; }
+  #app { height: auto !important; }
+  .stage { display: flex; gap: 40px; padding: 24px; align-items: flex-start; }
+  .slot > p { margin: 0 0 8px; font: 700 13px/1.4 "Microsoft YaHei", sans-serif; color: #55524d; }
+  .slot .card-page { box-shadow: 0 14px 34px rgba(40, 34, 26, .18); }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="slot">
+    <p>eorzea · 对齐 Figma 设计稿（1080×1440，卡边距 40 / 上 46 / 下 55）</p>
+
+    <article class="card-page theme-eorzea density-balanced code-appearance-follow"
+      style="--card-height:1440px; --card-horizontal-padding:40px; --card-top-padding:46px; --card-bottom-padding:55px;
+             --body-size:30px; --body-line-height:1.633; --block-gap:16px;
+             --heading-2:48px; --heading-3:36px; --heading-2-before-space:0px; --heading-3-before-space:0px;
+             --code-size:24px; --table-font-size:23px; --image-max-height:700px;">
+
+      <main class="card-content">
+
+        <section class="card-fragment">
+          <section class="card-cover">
+            <div class="card-cover-decoration"></div>
+            <h2 class="card-cover-title">Md2Card：把 Markdown 笔记变成小红书图片</h2>
+          </section>
+        </section>
+
+        <section class="card-fragment" style="margin-top:17px">
+          <div class="content-block"><p>Md2Card 适合日常 Markdown 笔记：学习总结、读书摘录、课程笔记、技术文章或知识整理都可以直接导入。</p></div>
+        </section>
+
+        <section class="card-fragment" style="margin-top:12px">
+          <blockquote><div class="content-block"><p><strong>纯前端、本地处理、预览即导出。</strong>这是一篇首次打开工作台就能完整阅读的产品演示：不需要上传文件，也不需要先授予图片目录权限。</p></div></blockquote>
+        </section>
+
+        <section class="card-fragment" style="margin-top:33px">
+          <h2 class="heading depth-2">从一篇 Markdown 开始</h2>
+        </section>
+
+        <section class="card-fragment" style="margin-top:36px">
+          <div class="content-block"><p>你可以直接替换左侧内容、或导入单篇 <code class="inline-code">.md</code> 文件。默认的 <strong>3:4 标准卡片</strong>已适合多数笔记。</p></div>
+        </section>
+
+        <section class="card-fragment" style="margin-top:17px">
+          <ol class="markdown-list">
+            <li><div class="content-block"><p>输入或导入 Markdown；</p></div></li>
+            <li><div class="content-block"><p>先检查右侧自动分页；</p></div></li>
+          </ol>
+        </section>
+
+        <section class="card-fragment" style="margin-top:33px">
+          <figure class="table-card">
+            <div class="table-frame">
+              <table>
+                <thead>
+                  <tr><th>内容类型</th><th>默认策略</th><th>可单独调整</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>普通正文</td><td>保持稳定字号与阅读宽度</td><td>字号、行距、段间距</td></tr>
+                  <tr><td>标题层级</td><td>避免孤立停在页尾</td><td>H2 / H3 / H4 安全区与段前距</td></tr>
+                  <tr><td>复杂内容</td><td>不连带缩小整页正文</td><td>表格字号、公式缩放、代码字号</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </figure>
+        </section>
+
+      </main>
+
+      <footer class="card-footer"><span class="page-number">01 / 02</span></footer>
+    </article>
+  </div>
+</div>
+
+<script>
+/* 【开发用测量钩子】仅当 URL 带 ?measure=1 时生效：
+ * 把关键元素的 getBoundingClientRect 与关键计算样式导成 JSON 塞进 document.body，
+ * 配合 chrome --headless=new --dump-dom 使用，即可拿到精确布局数值，
+ * 不必靠截图猜像素。正常访问本页（无参数）时此脚本直接 return，不产生任何影响。 */
+if (new URLSearchParams(location.search).get('measure') === '1') {
+  const CARD = '.card-page';
+  const card = document.querySelector(CARD);
+  const cr = card.getBoundingClientRect();
+  const R = (el) => {
+    const r = el.getBoundingClientRect();
+    return { x: +(r.left - cr.left).toFixed(1), y: +(r.top - cr.top).toFixed(1),
+             w: +r.width.toFixed(1), h: +r.height.toFixed(1) };
+  };
+  const CS = (el, props) => {
+    const s = getComputedStyle(el), o = {};
+    props.forEach(p => o[p] = s.getPropertyValue(p));
+    return o;
+  };
+  const TYPO = ['font-size', 'line-height', 'font-weight', 'color', 'padding', 'margin', 'border-width', 'border-radius', 'background-color'];
+  const out = { card: { w: +cr.width.toFixed(1), h: +cr.height.toFixed(1) }, items: [] };
+  const sel = [
+    '.card-content', '.card-cover', '.card-cover-decoration', '.card-cover-title',
+    'blockquote', '.heading.depth-2', '.markdown-list', '.markdown-list li',
+    '.table-card', '.table-frame', 'table', 'table th', '.card-footer', '.page-number'
+  ];
+  sel.forEach(s => {
+    const el = document.querySelector(s);
+    if (!el) { out.items.push({ sel: s, missing: true }); return; }
+    out.items.push({ sel: s, rect: R(el), cs: CS(el, TYPO) });
+  });
+  // ::before / ::after 伪元素（H2 牌匾、列表徽章等全靠伪元素画）
+  ['.heading.depth-2::before', '.heading.depth-2::after', '.markdown-list li::before'].forEach(s => {
+    const [base, pseudo] = s.split('::');
+    const el = document.querySelector(base);
+    if (!el) { out.items.push({ sel: s, missing: true }); return; }
+    const cs = getComputedStyle(el, '::' + pseudo);
+    out.items.push({ sel: s, cs: {
+      content: cs.content, width: cs.width, height: cs.height,
+      'font-size': cs['font-size'], 'line-height': cs['line-height'], color: cs.color,
+      background: cs.backgroundImage + ' | ' + cs.backgroundColor,
+      'border-width': cs.borderWidth, 'border-image-slice': cs.borderImageSlice,
+      'border-image-width': cs.borderImageWidth, 'border-image-source': cs.borderImageSource,
+      position: cs.position, top: cs.top, right: cs.right, bottom: cs.bottom, left: cs.left,
+      'border-radius': cs.borderRadius
+    }});
+  });
+  document.body.innerHTML = '<pre id="GEO">' + JSON.stringify(out, null, 1) + '</pre>';
+}
+</script>
+</body>
+</html>
